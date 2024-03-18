@@ -2,20 +2,16 @@
 from tkinter import *
 from tkinter import messagebox
 import customtkinter as mctk
-from PIL import Image as im
+from PIL import Image as Im
 import os
 
 
 # IMPORTS ABOUT DIRECTORIES ORGANISATIONS
 from Controllers.AuthController import login
 from Models.Customer import Customer
-import Dashboard
+from frontend.Components.Utilities import ERRORS
 
-# CONSTANTS AND LOGIN METHODS DEFINITIONS
-ERRORS = {
-    "empty_fields": "Vous devez remplir tous les champs !",
-    "login_failed": "Les informations de connexion ne correspondent pas !"
-}
+# UTILITIES
 
 
 def get_parent_path():
@@ -25,20 +21,24 @@ def get_parent_path():
     return path
 
 
-class LoginGUI(mctk.CTkToplevel):
-    def __init__(self, master):
+class LoginGUI(mctk.CTkFrame):
+    def __init__(self, master, on_login):
         super().__init__(master)
+        self.configure(width=1000)
+        self.configure(height=600)
+        # self.geometry("925x500+300+200")
+        self.on_login = on_login
         self.master = master
         master.title("BalanceMaster - Login")
 
         light_mg = os.path.join(get_parent_path(), "transparent-login.png")
         dark_mg = light_mg
 
-        img = mctk.CTkImage(light_image=im.open(light_mg), dark_image=im.open(dark_mg), size=(400, 400))
-        my_label2 = mctk.CTkLabel(master, image=img, bg_color="transparent", fg_color="transparent", text="")
+        img = mctk.CTkImage(light_image=Im.open(light_mg), dark_image=Im.open(dark_mg), size=(400, 400))
+        my_label2 = mctk.CTkLabel(self, image=img, bg_color="transparent", fg_color="transparent", text="")
         my_label2.place(x=50, y=60)
 
-        frame = mctk.CTkFrame(master, width=360, height=400, bg_color="transparent")
+        frame = mctk.CTkFrame(self, width=360, height=400, bg_color="transparent")
         frame.place(x=480, y=60)
 
         heading = mctk.CTkLabel(frame, text="Inscription", font=('Microsoft YaHei UI Light', 23, 'bold'))
@@ -72,8 +72,9 @@ class LoginGUI(mctk.CTkToplevel):
 
         light_mg = os.path.join(get_parent_path(), "logo_trial.png")
         dark_mg = light_mg
-        img = mctk.CTkImage(light_image=im.open(light_mg), dark_image=im.open(dark_mg), size=(450, 250))
-        my_label2 = mctk.CTkLabel(master, image=img, bg_color="transparent", fg_color="transparent", text="")
+
+        img = mctk.CTkImage(light_image=Im.open(light_mg), dark_image=Im.open(dark_mg), size=(450, 250))
+        my_label2 = mctk.CTkLabel(self, image=img, bg_color="transparent", fg_color="transparent", text="")
         my_label2.place(x=0, y=250)
 
         login_button = mctk.CTkButton(master=frame, text="Login", bg_color='transparent', command=lambda: self.login_logic())
@@ -107,6 +108,12 @@ class LoginGUI(mctk.CTkToplevel):
 
         return user
 
+    def set_frame_size(self, master):
+        screen_width = master.winfo_screenwidth()
+        screen_height = master.winfo_screenheight()
+        self.configure(width=screen_width)
+        self.configure(height=500)
+
     def login_logic(self):
         login_elements = self.recover_input()
         if not login_elements:
@@ -114,12 +121,12 @@ class LoginGUI(mctk.CTkToplevel):
         else:
             customer_data = Customer(username=login_elements['my_username'], password=login_elements['my_password'])
             result = login(customer_data)
-            #print(customer_data)
+            # print(customer_data)
             if result is not None:
-                #print('all fine')
-                messagebox.showinfo("balancemaster", "Welcome".format(self.username_ent.get()))
-                dashboard.DashboardGUI(root)
-                root.mainloop()
+                # print('all fine')
+                name_to_welcome = self.username_ent.get()
+                messagebox.showinfo("balancemaster", f"Welcome Mr / Mrs {name_to_welcome}")
+                self.on_login()
             else:
                 self.set_error(ERRORS['login_failed'])
                 return
@@ -130,20 +137,15 @@ def set_theme(master):
         print(master._get_appearance_mode())
         mode = 'light'
         master._set_appearance_mode('light')
-        mctk.set_appearance_mode('light')
+        mctk.set_appearance_mode(mode)
     else:
         mode = "dark"
         print(master._get_appearance_mode())
         master._set_appearance_mode('dark')
-        mctk.set_appearance_mode('dark')
+        mctk.set_appearance_mode(mode)
 
     # root._set_appearance_mode(f"{mode}")
-    #mctk.set_appearance_mode(mode)
-    #master._set_appearance_mode(mode)
-    # global toogleThemeButton
-    #toogleThemeButton.configure(text = f"{mode.upper()} mode")
-
-
-
-if __name__ == "__main__":
-    print("hello world")
+    # mctk.set_appearance_mode(mode)
+    # master._set_appearance_mode(mode)
+    # global toggleThemeButton
+    # toggleThemeButton.configure(text = f"{mode.upper()} mode")

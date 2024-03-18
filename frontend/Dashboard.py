@@ -1,9 +1,13 @@
 # SYSTEM IMPORTS
-from tkinter import *
-from tkinter import messagebox
+# from tkinter import *
+# from tkinter import messagebox
 import customtkinter as mctk
-from PIL import Image as im
+from PIL import Image as Im
 import os
+
+from Controllers.DashboardController import DashboardController
+from frontend.Components.DashboardInstance import DashboardInstance
+from frontend.Components.Sidebar import Sidebar
 
 
 def get_parent_path():
@@ -13,44 +17,40 @@ def get_parent_path():
     return path
 
 
-class DashboardGUI(mctk.CTkToplevel):
-    def __init__(self, master):
+class DashboardGUI(mctk.CTkFrame):
+    def __init__(self, master, on_logout):
         super().__init__(master)
+        # self.configure(width=1000)
+        # self.configure(height=600)
+        self.configure(fg_color='transparent')
+        self.set_frame_size(master)
+        self.on_logout = on_logout
         self.master = master
         master.title("BalanceMaster - Client Dashboard")
+        # self.dashboard_instance = DashboardInstance(self)
+        self.dashboard_instance = DashboardController(self)
+        self.sidebar = Sidebar(self, on_logout, self.dashboard_instance.current_frame, switch_page=self.dashboard_instance.switch_page)
+        # self.sidebar.lift(self.dashboard_instance.current_frame)
+        # self.place(relx=0.21, rely=0.125, relwidth=0.78, relheight=0.94)
+        toggle_menu_btn = mctk.CTkButton(master=self, height=40, text="MENU", bg_color='transparent', command=lambda: self.toggle_menu(self.sidebar))
+        toggle_menu_btn.place(x=5, y=5)
+        toggle_menu_btn.lift(self.sidebar)
+        self.lift()
 
-        light_mg = os.path.join(get_parent_path(), "transparent-login.png")
-        dark_mg = light_mg
+    def set_frame_size(self, master):
+        screen_width = master.winfo_screenwidth()
+        screen_height = master.winfo_screenheight()
+        self.configure(width=screen_width)
+        self.configure(height=screen_height)
 
-        img = mctk.CTkImage(light_image=im.open(light_mg), dark_image=im.open(dark_mg), size=(400, 400))
-        my_label2 = mctk.CTkLabel(master, image=img, bg_color="transparent", fg_color="transparent", text="")
-        my_label2.place(x=50, y=60)
+    def button_click_callback(self, message):
+        print(message)
 
-        frame = mctk.CTkFrame(master, width=360, height=400, bg_color="transparent")
-        frame.place(x=480, y=60)
-
-        heading = mctk.CTkLabel(frame, text="WELCOME SIR", font=('Microsoft YaHei UI Light', 23, 'bold'))
-        heading.place(x=100, y=8)
-
-
-
-# if __name__ == "__main__":
-#    mctk.set_appearance_mode('light')
-#   mctk.set_default_color_theme('blue')
-#  root = mctk.CTk()
-# root.geometry("925x500+300+200")
-# root.configure(bg='#FFFFF')
-# root._set_appearance_mode("light")
-# root._apply_appearance_mode('light')
-# root.resizable(False, False)
-# root.iconify()
-
-# light_mg = os.path.join(get_parent_path(), 'background-light.jpeg')
-# dark_mg = os.path.join(get_parent_path(), 'background.jpg')
-
-# bg = mctk.CTkImage(light_image=im.open(light_mg), dark_image=im.open(dark_mg), size=(925, 500))
-# my_label = mctk.CTkLabel(root, image=bg, text="")
-# my_label.place(x=0, y=0)
-# toggle_theme_button = mctk.CTkButton(master=root, command=set_theme(root), text="LIGHT mode",
-#                                    bg_color="transparent")
-# toggle_theme_button.pack()
+    def toggle_menu(self, sidebar):
+        sidebar.toggle_sidebar()
+        # screen_width = login.winfo_screenwidth()
+        # screen_height = login.winfo_screenheight()
+        # screen_height = str(screen_height)
+        # screen_width = str(screen_width)
+        # screen = screen_width + "x" + screen_height
+        # login.geometry(screen)

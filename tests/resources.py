@@ -31,3 +31,26 @@ my_label.place(x=0,y=0)
 toogleThemeButton = mctk.CTkButton(master=root,text="LIGHT mode",bg_color="transparent")
 toogleThemeButton.configure(command=setTheme())
 toogleThemeButton.pack()
+
+#SIDEBAR CODE
+def extend_sidebar(event):
+    sidebar.place(x=0, y=0, relheight=1)
+
+
+def retract_sidebar(event):
+    sidebar.place_forget()
+
+
+# Sidebar
+sidebar = mctk.CTkFrame(self, bg="blue", width=100)
+sidebar.place(x=-100, y=0, relheight=1)
+
+# Main content area
+content = tk.Frame(root, bg="white", width=300)
+content.place(x=0, y=0, relheight=1, relwidth=1)
+
+# Event bindings
+sidebar.bind("<Enter>", extend_sidebar)
+sidebar.bind("<Leave>", retract_sidebar)
+
+root.mainloop()

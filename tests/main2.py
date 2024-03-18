@@ -59,4 +59,27 @@ app.mainloop()
 #     root.resizable(False,False)
 #     toogleThemeButton1 = mctk.CTkButton(master=main_window,text="LIGHT mode",command=set_theme,bg_color="transparent")
 #     toogleThemeButton1.pack()
-#     main_window.mainloop()
+#     main_window.mainl
+
+
+
+
+
+
+
+
+
+
+
+
+    def _add_frame(self, Frame, name):
+        self.frames[name] = Frame(self.root)
+        self.frames[name].grid(row=0, column=0, sticky="nsew")
+
+    def switch(self, name):
+        frame = self.frames[name]
+        frame.tkraise()
+
+    def start_mainloop(self):
+        self.root.mainloop()
+
